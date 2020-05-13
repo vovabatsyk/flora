@@ -90,7 +90,7 @@ export default {
         ]
       }
 
-      return [{ title: 'Login', icon: 'mdi-account-circle', url: '/login' }]
+      return []
     },
   },
   methods: {

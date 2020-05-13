@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import authGuard from './auth-guard'
 
 Vue.use(VueRouter)
 
@@ -31,21 +32,25 @@ const routes = [
     path: '/registration',
     name: 'Register',
     component: () => import('../views/Register.vue'),
+    beforeEnter: authGuard,
   },
   {
     path: '/orders',
     name: 'Orders',
     component: () => import('../views/Orders.vue'),
+    beforeEnter: authGuard,
   },
   {
     path: '/new',
     name: 'NewAd',
     component: () => import('../views/NewAd.vue'),
+    beforeEnter: authGuard,
   },
   {
     path: '/list',
     name: 'MyAds',
     component: () => import('../views/MyAds.vue'),
+    beforeEnter: authGuard,
   },
   {
     path: '/ad/:id',
