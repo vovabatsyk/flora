@@ -99,26 +99,22 @@ export default {
     country: 'Україна',
   }),
   methods: {
-    sabmitHandler() {
-      if (this.$refs.form.validate()) {
-        const ad = {
-          title: this.title,
-          description: this.description,
-          url: this.url,
-          promo: this.promo,
-          avalable: this.avalable,
-          price: this.price,
-          country: this.country,
+    async sabmitHandler() {
+      try {
+        if (this.$refs.form.validate()) {
+          const ad = {
+            title: this.title,
+            description: this.description,
+            url: this.url,
+            promo: this.promo,
+            avalable: this.avalable,
+            price: this.price,
+            country: this.country,
+          }
+          await this.$store.dispatch('createAd', ad)
+          this.$router.push('/')
         }
-        this.$store.dispatch('createAd', ad)
-
-        console.log(ad)
-        this.title = ''
-        this.description = ''
-        this.url = ''
-        this.promo = false
-        this.avalable = true
-      }
+      } catch (error) {}
     },
   },
 }

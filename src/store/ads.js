@@ -1,3 +1,5 @@
+import firebase from 'firebase/app'
+
 export default {
   state: {
     ads: [
@@ -71,10 +73,19 @@ export default {
     },
   },
   actions: {
-    createAd({ commit }, payload) {
-      payload.id = 'qqwqweqweqw'
-
-      commit('createAd', payload)
+    async createAd({ commit }, payload) {
+      commit('clearError')
+      commit('setLoading', true)
+      await firebase
+        .database()
+        .ref('ads')
+        .push(payload)
+      try {
+      } catch (error) {
+        commit('setError', error.message)
+        commit('setLoading', false)
+        throw error
+      }
     },
   },
   getters: {
