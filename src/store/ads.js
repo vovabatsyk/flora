@@ -1,86 +1,62 @@
 import firebase from 'firebase/app'
+class Ad {
+  constructor(title, description, ownerId, url = '', promo = false, id = null) {
+    this.title = title
+    this.description = description
+    this.ownerId = ownerId
+    this.url = url
+    this.promo = promo
+    this.id = id
+  }
+}
 
 export default {
   state: {
-    ads: [
-      {
-        title: 'Суниця Сан Андреас',
-        description:
-          'Популярний ремонтантний сорт, може плодоносити до 7 разів за сезон. Вирізняється високою якістю плодів, високими смаковими показниками та чудовим зовнішнім виглядом. Ягоди конічної форми, масою 25-30 г (до 50 г). М’якуш щільний, червоно-помаранчевий, приємний на смак, солодкий з легкою кислинкою. Сорт стійкий до хвороб. Майже не утворює вусів.',
-        promo: true,
-        avalable: true,
-        id: 'asdsa',
-        country: 'Ukraine',
-        price: '100uah',
-        url:
-          'https://images.wallpaperscraft.ru/image/klubnika_yagody_krupnyj_planom_113099_1920x1080.jpg',
-      },
-      {
-        url: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
-        title: 'Title 2',
-        description: 'Descriptions',
-        avalable: false,
-        country: 'Ukraine',
-        price: '100uah',
-        promo: true,
-        id: 'ertrrt',
-      },
-      {
-        title: 'Title 3',
-        description: 'Descriptions',
-        promo: false,
-        avalable: true,
-        price: '100uah',
-        country: 'Ukraine',
-        id: 'snkfs',
-        url: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
-      },
-      {
-        title: 'Title 4',
-        description: 'Descriptions',
-        promo: true,
-        avalable: true,
-        country: 'Ukraine',
-        price: '100uah',
-        id: 'njjndgrkj',
-        url: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
-      },
-      {
-        title: 'Title 5',
-        description: 'Descriptions',
-        promo: false,
-        country: 'Ukraine',
-        avalable: true,
-        price: '100uah',
-        id: '555',
-        url: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
-      },
-      {
-        url: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
-        title: 'Title 6',
-        description: 'Descriptions',
-        country: 'Ukraine',
-        promo: false,
-        avalable: false,
-        id: '666',
-        price: '100uah',
-      },
-    ],
+    ads: [],
   },
   mutations: {
     createAd(state, payload) {
       state.ads.push(payload)
+    },
+    loadAds(state, payload) {
+      state.ads = payload
     },
   },
   actions: {
     async createAd({ commit }, payload) {
       commit('clearError')
       commit('setLoading', true)
-      await firebase
-        .database()
-        .ref('ads')
-        .push(payload)
+
       try {
+        await firebase
+          .database()
+          .ref('ads')
+          .push(payload)
+      } catch (error) {
+        commit('setError', error.message)
+        commit('setLoading', false)
+        throw error
+      }
+    },
+    async fetchAds({ commit }) {
+      commit('clearError')
+      commit('setLoading', true)
+
+      const resAds = []
+
+      try {
+        const fbVal = await firebase
+          .database()
+          .ref('ads')
+          .once('value')
+        const ads = fbVal.val()
+        Object.keys(ads).forEach(key => {
+          const ad = ads[key]
+          resAds.push(
+            new Ad(ad.title, ad.description, ad.ownerId, ad.url, ad.promo, key)
+          )
+        })
+        commit('loadAds', resAds)
       } catch (error) {
         commit('setError', error.message)
         commit('setLoading', false)

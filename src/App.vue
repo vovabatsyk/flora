@@ -89,9 +89,11 @@ export default {
           { title: 'Registration', icon: 'mdi-face', url: '/registration' },
         ]
       }
-
       return []
     },
+  },
+  mounted() {
+    this.$store.dispatch('fetchAds')
   },
   methods: {
     closeError() {
